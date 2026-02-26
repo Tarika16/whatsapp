@@ -1,3 +1,4 @@
+// Infinite Chat v2.1
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
