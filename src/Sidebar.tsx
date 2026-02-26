@@ -189,6 +189,20 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
         }
     };
 
+    const deleteChat = async (e: React.MouseEvent, chatId: string) => {
+        e.stopPropagation(); // Don't select the chat when clicking delete
+        if (!window.confirm("Are you sure you want to delete this chat?")) return;
+
+        try {
+            const { error } = await supabase.from('chats').delete().eq('id', chatId);
+            if (error) throw error;
+            fetchChats();
+        } catch (err: any) {
+            console.error("Delete error:", err);
+            alert("Error deleting chat: " + err.message);
+        }
+    };
+
     return (
         <div style={styles.sidebar}>
             <div style={styles.verticalTabs}>
@@ -248,7 +262,7 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                         </div>
                     ) : (
                         chats.map(chat => (
-                            <div key={chat.id} style={{ ...styles.chatItem, backgroundColor: selectedChatId === chat.id ? '#2a3942' : 'transparent' }} onClick={() => onSelectChat(chat)}>
+                            <div key={chat.id} className="chat-item-container" style={{ ...styles.chatItem, backgroundColor: selectedChatId === chat.id ? '#2a3942' : 'transparent' }} onClick={() => onSelectChat(chat)}>
                                 <img src={chat.avatar_url || "https://ui-avatars.com/api/?name=" + (chat.name || 'C')} style={styles.chatAvatar} alt="" />
                                 <div style={styles.chatInfo}>
                                     <div style={styles.chatHeader}>
@@ -263,11 +277,18 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                                         {chat.messages?.[0]?.content || "No messages yet"}
                                     </div>
                                 </div>
+                                {chat.id !== '00000000-0000-0000-0000-000000000000' && (
+                                    <button className="delete-btn" style={styles.deleteBtn} onClick={(e) => deleteChat(e, chat.id)}>🗑️</button>
+                                )}
                             </div>
                         ))
                     )}
                 </div>
             </div>
+            <style>{`
+                .chat-item-container:hover .delete-btn { display: block !important; }
+                .delete-btn { display: none; }
+            `}</style>
         </div>
     );
 }
@@ -293,5 +314,6 @@ const styles: Record<string, React.CSSProperties> = {
     name: { fontWeight: '500', fontSize: '16px', color: '#e9edef' },
     time: { fontSize: '12px', color: '#8696a0' },
     emptyTab: { padding: '40px', textAlign: 'center', color: '#8696a0' },
-    chatStatus: { fontSize: '13px', color: '#8696a0', marginTop: '2px' }
+    chatStatus: { fontSize: '13px', color: '#8696a0', marginTop: '2px' },
+    deleteBtn: { background: 'none', border: 'none', color: '#ea0038', cursor: 'pointer', fontSize: '18px', padding: '5px', opacity: 0.7, alignSelf: 'center' }
 };
