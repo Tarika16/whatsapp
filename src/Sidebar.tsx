@@ -12,7 +12,6 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
     const [chats, setChats] = useState<any[]>([]);
     const [search, setSearch] = useState('');
     const [activeTab, setActiveTab] = useState<'chats' | 'calls' | 'contacts'>('chats');
-    const [showSearch, setShowSearch] = useState(false);
     const [users, setUsers] = useState<any[]>([]);
 
     useEffect(() => {
@@ -204,7 +203,7 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                             style={styles.searchInput}
                             placeholder="Search or start new chat"
                             value={search}
-                            onChange={(e) => setActiveTab('contacts') ? handleSearchUsers(e.target.value) : setSearch(e.target.value)}
+                            onChange={(e) => activeTab === 'contacts' ? handleSearchUsers(e.target.value) : setSearch(e.target.value)}
                         />
                     </div>
                 </div>

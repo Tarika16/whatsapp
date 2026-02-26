@@ -75,8 +75,8 @@ export default function ChatView({ chat, user }: ChatViewProps) {
                 <div style={styles.headerActions}>
                     <button style={styles.iconBtn} onClick={() => initiateCall('video')}>📹</button>
                     <button style={styles.iconBtn} onClick={() => initiateCall('audio')}>📞</button>
-                    <button style={styles.iconBtn}>🔍</button>
-                    <button style={styles.iconBtn}>⋮</button>
+                    <button style={styles.iconBtn} onClick={() => alert("Search functionality coming soon!")}>🔍</button>
+                    <button style={styles.iconBtn} onClick={() => alert("Menu options coming soon!")}>⋮</button>
                 </div>
             </div>
 
