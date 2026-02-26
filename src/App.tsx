@@ -36,6 +36,34 @@ export default function App() {
     if (error) alert(error.message);
   };
 
+  const handleDemoLogin = async () => {
+    const demoEmail = 'demo@example.com';
+    const demoPassword = 'demo123456';
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: demoEmail,
+      password: demoPassword
+    });
+
+    if (signInError) {
+      // Try to sign up if login fails (likely user doesn't exist)
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: demoEmail,
+        password: demoPassword,
+        options: { data: { name: 'Demo User' } }
+      });
+
+      if (signUpError) {
+        alert("Demo login failed: " + signUpError.message);
+      } else {
+        // Sign up success, now sign in
+        await supabase.auth.signInWithPassword({ email: demoEmail, password: demoPassword });
+      }
+    }
+  };
+
   if (view === 'login') {
     return (
       <div style={styles.loginContainer}>
@@ -50,7 +78,7 @@ export default function App() {
           </div>
           <button
             style={{ ...styles.secondaryButton, width: '100%', marginTop: '15px', color: '#8696a0', borderColor: '#313d45' }}
-            onClick={() => { setEmail('demo@example.com'); setPassword('demo123456'); setTimeout(handleSignIn, 100); }}
+            onClick={handleDemoLogin}
           >
             Try Demo Login
           </button>
