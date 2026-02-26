@@ -1,4 +1,4 @@
-// Infinite Chat v2.1
+// Infinite Chat v3.1 [BUILD: 2026-02-26 10:58]
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
