@@ -221,6 +221,10 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                     </div>
                 </div>
 
+                <div style={{ backgroundColor: '#ffd700', color: '#000', padding: '4px 12px', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>
+                    🚀 PRODUCTION V3.2 ACTIVE - REFRESH IF YOU DON'T SEE THIS
+                </div>
+
                 <div style={styles.searchBar}>
                     <div style={styles.searchContainer}>
                         <span style={styles.searchIcon}>🔍</span>
@@ -232,6 +236,14 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                         />
                     </div>
                 </div>
+
+                {activeTab === 'chats' && chats.length > 1 && (
+                    <div style={{ padding: '8px 16px', borderBottom: '1px solid #202c33' }}>
+                        <button onClick={clearAllChats} style={{ width: '100%', padding: '8px', backgroundColor: '#313d45', color: '#f15c5c', border: '1px solid #f15c5c', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                            🗑️ CLEAR ALL CHATS
+                        </button>
+                    </div>
+                )}
 
                 <div style={styles.chatList}>
                     {activeTab === 'contacts' ? (
