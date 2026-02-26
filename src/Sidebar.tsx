@@ -220,9 +220,14 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
     };
 
     useEffect(() => {
-        // FORCE ALERT TO PROVE VERSION 3.4 IS LOADED
+        // FORCE ALERT TO PROVE VERSION 3.6 IS LOADED
         if (user) {
-            console.log("whatsapp clone v3.4 loaded");
+            console.log("whatsapp clone v3.6 loaded");
+            // Only alert once per session to be less annoying but prove it's live
+            if (!sessionStorage.getItem('v3_6_alert')) {
+                alert("🚨 WHATSAPP CLONE V3.6 UPDATED! (TRASH ICON IS NOW LIVE) 🚨");
+                sessionStorage.setItem('v3_6_alert', 'true');
+            }
         }
     }, [user]);
 
@@ -236,8 +241,8 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
             </div>
 
             <div style={styles.contentArea}>
-                <div style={{ backgroundColor: '#ff0055', color: '#fff', padding: '10px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center', borderBottom: '2px solid #fff' }}>
-                    🚨 VERSION 3.4 ULTRA ACTIVE - DELETE IS NOW LIVE! 🚨
+                <div style={{ backgroundColor: '#00ffcc', color: '#000', padding: '10px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center', borderBottom: '2px solid #000' }}>
+                    ✅ VERSION 3.6 FINAL SYNC - DELETE OPTION ACTIVE! ✅
                 </div>
                 <div style={styles.header}>
                     <h2 style={styles.headerTitle}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h2>
