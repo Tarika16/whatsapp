@@ -278,7 +278,10 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                                     </div>
                                 </div>
                                 {chat.id !== '00000000-0000-0000-0000-000000000000' && (
-                                    <button className="delete-btn" style={styles.deleteBtn} onClick={(e) => deleteChat(e, chat.id)} title="Delete Chat">🗑️</button>
+                                    <button className="delete-btn" style={styles.deleteBtn} onClick={(e) => deleteChat(e, chat.id)} title="Delete Chat">
+                                        <span style={{ marginRight: '4px' }}>🗑️</span>
+                                        <span style={{ fontSize: '11px', fontWeight: 'bold' }}>DELETE</span>
+                                    </button>
                                 )}
                             </div>
                         ))
@@ -315,5 +318,18 @@ const styles: Record<string, React.CSSProperties> = {
     time: { fontSize: '12px', color: '#8696a0' },
     emptyTab: { padding: '40px', textAlign: 'center', color: '#8696a0' },
     chatStatus: { fontSize: '13px', color: '#8696a0', marginTop: '2px' },
-    deleteBtn: { background: 'none', border: 'none', color: '#ea0038', cursor: 'pointer', fontSize: '18px', padding: '5px', opacity: 0.7, alignSelf: 'center' }
+    deleteBtn: {
+        backgroundColor: '#ea0038',
+        color: 'white',
+        border: 'none',
+        borderRadius: '4px',
+        padding: '6px 10px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 'auto',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+        zIndex: 10
+    }
 };
