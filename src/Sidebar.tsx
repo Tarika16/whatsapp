@@ -48,26 +48,12 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
         if (data) setChats(data);
     };
 
-    const openPersonalChat = async () => {
-        // 1. Check for existing self-chat
+    const createNewChat = async () => {
         try {
-            const { data: existingChat } = await supabase
-                .from('chats')
-                .select('id, name, is_group, chat_members!inner(user_id)')
-                .eq('is_group', false)
-                .eq('name', 'Me (You)')
-                .eq('chat_members.user_id', user.id)
-                .maybeSingle();
-
-            if (existingChat) {
-                onSelectChat(existingChat);
-                return;
-            }
-
-            // 2. Create new self-chat if none exists
+            const chatName = `New Chat ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
             const { data: chatData, error: chatError } = await supabase
                 .from('chats')
-                .insert([{ name: 'Me (You)', is_group: false, created_by: user.id }])
+                .insert([{ name: chatName, is_group: false, created_by: user.id }])
                 .select()
                 .single();
 
@@ -82,8 +68,8 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
             onSelectChat(chatData);
             fetchChats();
         } catch (err: any) {
-            console.error("Personal chat creation error:", err);
-            alert("Could not start personal chat: " + (err.message || "Please check your database permissions"));
+            console.error("Chat creation error:", err);
+            alert("Could not start chat: " + (err.message || "Checking permissions..."));
         }
     };
 
