@@ -1,4 +1,4 @@
-// Infinite Chat v3.7 [BUILD: 2026-02-26 11:28]
+// Infinite Chat v4.0 [PRODUCTION BUILD]
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
@@ -237,17 +237,7 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
         }
     };
 
-    useEffect(() => {
-        // FORCE ALERT TO PROVE VERSION 3.6 IS LOADED
-        if (user) {
-            console.log("whatsapp clone v3.6 loaded");
-            // Only alert once per session to be less annoying but prove it's live
-            if (!sessionStorage.getItem('v3_6_alert')) {
-                alert("🚨 WHATSAPP CLONE V3.6 UPDATED! (TRASH ICON IS NOW LIVE) 🚨");
-                sessionStorage.setItem('v3_6_alert', 'true');
-            }
-        }
-    }, [user]);
+
 
     return (
         <div style={styles.sidebar}>
@@ -259,9 +249,6 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
             </div>
 
             <div style={styles.contentArea}>
-                <div style={{ backgroundColor: '#00ffcc', color: '#000', padding: '10px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center', borderBottom: '2px solid #000' }}>
-                    ✅ VERSION 3.6 FINAL SYNC - DELETE OPTION ACTIVE! ✅
-                </div>
                 <div style={styles.header}>
                     <h2 style={styles.headerTitle}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h2>
                     <div style={styles.headerActions}>
@@ -270,9 +257,6 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                     </div>
                 </div>
 
-                <div style={{ backgroundColor: '#ffd700', color: '#000', padding: '4px 12px', fontSize: '12px', fontWeight: 'bold', textAlign: 'center' }}>
-                    🚀 PRODUCTION V3.2 ACTIVE - REFRESH IF YOU DON'T SEE THIS
-                </div>
 
                 <div style={styles.searchBar}>
                     <div style={styles.searchContainer}>
