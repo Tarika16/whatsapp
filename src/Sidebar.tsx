@@ -219,6 +219,13 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
         }
     };
 
+    useEffect(() => {
+        // FORCE ALERT TO PROVE VERSION 3.4 IS LOADED
+        if (user) {
+            console.log("whatsapp clone v3.4 loaded");
+        }
+    }, [user]);
+
     return (
         <div style={styles.sidebar}>
             <div style={styles.verticalTabs}>
@@ -229,6 +236,9 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
             </div>
 
             <div style={styles.contentArea}>
+                <div style={{ backgroundColor: '#ff0055', color: '#fff', padding: '10px', fontSize: '14px', fontWeight: 'bold', textAlign: 'center', borderBottom: '2px solid #fff' }}>
+                    🚨 VERSION 3.4 ULTRA ACTIVE - DELETE IS NOW LIVE! 🚨
+                </div>
                 <div style={styles.header}>
                     <h2 style={styles.headerTitle}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h2>
                     <div style={styles.headerActions}>
