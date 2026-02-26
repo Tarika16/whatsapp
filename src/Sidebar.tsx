@@ -191,7 +191,7 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                 <div style={styles.header}>
                     <h2 style={styles.headerTitle}>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h2>
                     <div style={styles.headerActions}>
-                        <button style={styles.iconBtn} onClick={openPersonalChat} title="New Chat">+</button>
+                        <button style={styles.iconBtn} onClick={createNewChat} title="New Chat">+</button>
                         <button style={styles.iconBtn} title="Logout" onClick={() => supabase.auth.signOut()}>⏻</button>
                     </div>
                 </div>
