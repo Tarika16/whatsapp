@@ -67,7 +67,7 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
             // 2. Create new self-chat if none exists
             const { data: chatData, error: chatError } = await supabase
                 .from('chats')
-                .insert([{ name: 'Me (You)', is_group: false }])
+                .insert([{ name: 'Me (You)', is_group: false, created_by: user.id }])
                 .select()
                 .single();
 

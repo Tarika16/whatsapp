@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS public.chats (
     name TEXT, -- Group name
     avatar_url TEXT, -- Group avatar
     is_group BOOLEAN DEFAULT false,
+    created_by UUID REFERENCES public.users(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -58,6 +59,7 @@ CREATE POLICY "Public users are viewable by everyone" ON public.users FOR SELECT
 CREATE POLICY "Users can update own profile" ON public.users FOR UPDATE USING (auth.uid() = id);
 
 CREATE POLICY "Users can view chats they are members of" ON public.chats FOR SELECT USING (
+    auth.uid() = created_by OR
     EXISTS (SELECT 1 FROM public.chat_members WHERE chat_id = chats.id AND user_id = auth.uid())
 );
 
