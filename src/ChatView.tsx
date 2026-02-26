@@ -82,8 +82,14 @@ export default function ChatView({ chat, user }: ChatViewProps) {
 
             <div style={styles.messageList}>
                 <div style={styles.backgroundOverlay}></div>
-                {messages.map((msg) => (
-                    <div key={msg.id} style={msg.sender_id === user.id ? styles.myMessage : styles.theirMessage}>
+                {messages.map((msg, index) => (
+                    <div
+                        key={msg.id || index}
+                        style={{
+                            ...(msg.sender_id === user.id ? styles.myMessage : styles.theirMessage),
+                            animation: 'bounceIn 0.3s ease-out'
+                        }}
+                    >
                         <div style={styles.msgContent}>{msg.content}</div>
                         <div style={styles.msgTime}>
                             {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -92,6 +98,14 @@ export default function ChatView({ chat, user }: ChatViewProps) {
                 ))}
                 <div ref={scrollRef}></div>
             </div>
+
+            <style>{`
+                @keyframes bounceIn {
+                    0% { transform: scale(0.95); opacity: 0; }
+                    80% { transform: scale(1.02); opacity: 1; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+            `}</style>
 
             <form style={styles.inputArea} onSubmit={handleSendMessage}>
                 <button type="button" style={styles.iconBtn}>😀</button>

@@ -104,6 +104,22 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
         }
     };
 
+    const fetchAllUsers = async () => {
+        const { data } = await supabase.from('users').select('*').limit(50);
+        if (data) setUsers(data);
+    };
+
+    useEffect(() => {
+        if (activeTab === 'contacts') {
+            fetchAllUsers();
+        }
+    }, [activeTab]);
+
+    const calls = [
+        { id: 1, name: 'Alice', type: 'audio', status: 'Missed', time: 'Yesterday' },
+        { id: 2, name: 'Bob', type: 'video', status: 'Outgoing', time: 'Wednesday' },
+    ];
+
     const startNewChat = async (targetUser: any) => {
         if (targetUser.id === user.id) return alert("You can't chat with yourself!");
 
@@ -132,8 +148,7 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                         .single();
                     if (chatData) {
                         onSelectChat(chatData);
-                        setShowSearch(false);
-                        setSearch('');
+                        setActiveTab('chats');
                         return;
                     }
                 }
@@ -156,8 +171,7 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
             if (memberError) throw memberError;
 
             onSelectChat(chatData);
-            setShowSearch(false);
-            setSearch('');
+            setActiveTab('chats');
             fetchChats();
         } catch (err: any) {
             console.error("Chat creation error:", err);
@@ -168,9 +182,9 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
     return (
         <div style={styles.sidebar}>
             <div style={styles.verticalTabs}>
-                <div style={styles.tabIcon} title="Chats" onClick={() => setActiveTab('chats')}>💬</div>
-                <div style={styles.tabIcon} title="Calls" onClick={() => setActiveTab('calls')}>📞</div>
-                <div style={styles.tabIcon} title="Status" onClick={() => setActiveTab('contacts')}>⭕</div>
+                <div style={{ ...styles.tabIcon, color: activeTab === 'chats' ? '#00a884' : '#aebac1' }} title="Chats" onClick={() => setActiveTab('chats')}>💬</div>
+                <div style={{ ...styles.tabIcon, color: activeTab === 'calls' ? '#00a884' : '#aebac1' }} title="Calls" onClick={() => setActiveTab('calls')}>📞</div>
+                <div style={{ ...styles.tabIcon, color: activeTab === 'contacts' ? '#00a884' : '#aebac1' }} title="Contacts" onClick={() => setActiveTab('contacts')}>⭕</div>
                 <div style={{ ...styles.tabIcon, marginTop: 'auto' }} onClick={() => supabase.auth.signOut()}>⏻</div>
             </div>
 
@@ -190,15 +204,14 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                             style={styles.searchInput}
                             placeholder="Search or start new chat"
                             value={search}
-                            onChange={(e) => showSearch ? handleSearchUsers(e.target.value) : setSearch(e.target.value)}
+                            onChange={(e) => setActiveTab('contacts') ? handleSearchUsers(e.target.value) : setSearch(e.target.value)}
                         />
                     </div>
                 </div>
 
                 <div style={styles.chatList}>
-                    {showSearch ? (
+                    {activeTab === 'contacts' ? (
                         <div>
-                            {users.length === 0 && search.trim() !== "" && <div style={styles.emptyTab}>No users found.</div>}
                             {users.map(u => (
                                 <div key={u.id} style={styles.chatItem} onClick={() => startNewChat(u)}>
                                     <img src={u.avatar_url || "https://ui-avatars.com/api/?name=" + (u.name || 'U')} style={styles.chatAvatar} alt="" />
@@ -206,17 +219,32 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                                 </div>
                             ))}
                         </div>
-                    ) : activeTab === 'chats' ? (
+                    ) : activeTab === 'calls' ? (
+                        <div>
+                            {calls.map(call => (
+                                <div key={call.id} style={styles.chatItem}>
+                                    <img src={"https://ui-avatars.com/api/?name=" + call.name} style={styles.chatAvatar} alt="" />
+                                    <div style={styles.chatInfo}>
+                                        <div style={styles.chatHeader}>
+                                            <span style={styles.name}>{call.name}</span>
+                                            <span style={styles.time}>{call.time}</span>
+                                        </div>
+                                        <div style={{ ...styles.chatStatus, color: call.status === 'Missed' ? '#f15c5c' : '#8696a0' }}>
+                                            {call.type === 'video' ? '📹' : '📞'} {call.status}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
                         chats.map(chat => (
-                            <div key={chat.id} style={{ ...styles.chatItem, backgroundColor: selectedChatId === chat.id ? '#f0f2f5' : 'transparent' }} onClick={() => onSelectChat(chat)}>
+                            <div key={chat.id} style={{ ...styles.chatItem, backgroundColor: selectedChatId === chat.id ? '#2a3942' : 'transparent' }} onClick={() => onSelectChat(chat)}>
                                 <img src={chat.avatar_url || "https://ui-avatars.com/api/?name=" + (chat.name || 'C')} style={styles.chatAvatar} alt="" />
                                 <div style={styles.chatInfo}>
                                     <div style={styles.chatHeader}><span style={styles.name}>{chat.name || 'Global Lobby'}</span></div>
                                 </div>
                             </div>
                         ))
-                    ) : (
-                        <div style={styles.emptyTab}>No {activeTab} yet.</div>
                     )}
                 </div>
             </div>
@@ -227,7 +255,7 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
 const styles: Record<string, React.CSSProperties> = {
     sidebar: { width: '450px', display: 'flex', backgroundColor: '#111b21', height: '100vh', borderRight: '1px solid #313d45' },
     verticalTabs: { width: '60px', backgroundColor: '#202c33', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '15px 0', gap: '20px', borderRight: '1px solid #313d45' },
-    tabIcon: { fontSize: '24px', cursor: 'pointer', color: '#aebac1' },
+    tabIcon: { fontSize: '24px', cursor: 'pointer', color: '#aebac1', transition: 'color 0.2s' },
     contentArea: { flex: 1, display: 'flex', flexDirection: 'column' },
     header: { height: '60px', padding: '0 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111b21' },
     headerTitle: { fontSize: '22px', fontWeight: 'bold', color: '#e9edef' },
@@ -238,11 +266,12 @@ const styles: Record<string, React.CSSProperties> = {
     searchIcon: { color: '#8696a0', marginRight: '8px' },
     searchInput: { padding: '8px 4px', background: 'none', border: 'none', flex: 1, outline: 'none', fontSize: '14px', color: '#e9edef' },
     chatList: { flex: 1, overflowY: 'auto', backgroundColor: '#111b21' },
-    chatItem: { display: 'flex', padding: '12px 16px', gap: '12px', cursor: 'pointer', borderBottom: '1px solid #202c33' },
+    chatItem: { display: 'flex', padding: '12px 16px', gap: '12px', cursor: 'pointer', borderBottom: '1px solid #202c33', transition: 'background-color 0.2s' },
     chatAvatar: { width: '49px', height: '49px', borderRadius: '50%' },
     chatInfo: { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' },
     chatHeader: { display: 'flex', justifyContent: 'space-between' },
     name: { fontWeight: '500', fontSize: '16px', color: '#e9edef' },
     time: { fontSize: '12px', color: '#8696a0' },
-    emptyTab: { padding: '40px', textAlign: 'center', color: '#8696a0' }
+    emptyTab: { padding: '40px', textAlign: 'center', color: '#8696a0' },
+    chatStatus: { fontSize: '13px', color: '#8696a0', marginTop: '2px' }
 };
