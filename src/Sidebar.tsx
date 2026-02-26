@@ -203,6 +203,22 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
         }
     };
 
+    const clearAllChats = async () => {
+        if (!window.confirm("WARNING: This will delete ALL your chats except the Global Lobby. Proceed?")) return;
+        try {
+            const { error } = await supabase
+                .from('chats')
+                .delete()
+                .neq('id', '00000000-0000-0000-0000-000000000000')
+                .eq('created_by', user.id);
+            if (error) throw error;
+            fetchChats();
+        } catch (err: any) {
+            console.error("Clear error:", err);
+            alert("Error clearing chats: " + err.message);
+        }
+    };
+
     return (
         <div style={styles.sidebar}>
             <div style={styles.verticalTabs}>
