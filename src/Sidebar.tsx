@@ -278,7 +278,7 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                                     </div>
                                 </div>
                                 {chat.id !== '00000000-0000-0000-0000-000000000000' && (
-                                    <button className="delete-btn" style={styles.deleteBtn} onClick={(e) => deleteChat(e, chat.id)}>🗑️</button>
+                                    <button className="delete-btn" style={styles.deleteBtn} onClick={(e) => deleteChat(e, chat.id)} title="Delete Chat">🗑️</button>
                                 )}
                             </div>
                         ))
@@ -286,8 +286,8 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                 </div>
             </div>
             <style>{`
-                .chat-item-container:hover .delete-btn { display: block !important; }
-                .delete-btn { display: none; }
+                .delete-btn { opacity: 0.6; transition: opacity 0.2s; }
+                .delete-btn:hover { opacity: 1 !important; transform: scale(1.1); }
             `}</style>
         </div>
     );
