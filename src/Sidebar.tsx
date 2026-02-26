@@ -42,10 +42,19 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
     const fetchChats = async () => {
         const { data } = await supabase
             .from('chats')
-            .select('*, chat_members!inner(user_id)')
+            .select('*, chat_members!inner(user_id), messages(content, created_at)')
             .eq('chat_members.user_id', user.id)
             .order('created_at', { ascending: false });
-        if (data) setChats(data);
+
+        if (data) {
+            // Sort by latest message if available
+            const sorted = data.sort((a, b) => {
+                const aTime = a.messages?.[0]?.created_at || a.created_at;
+                const bTime = b.messages?.[0]?.created_at || b.created_at;
+                return new Date(bTime).getTime() - new Date(aTime).getTime();
+            });
+            setChats(sorted);
+        }
     };
 
     const createNewChat = async () => {
@@ -65,6 +74,8 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
 
             if (memberError) throw memberError;
 
+            // CRITICAL: Switch to chats tab so the user sees the new entry!
+            setActiveTab('chats');
             onSelectChat(chatData);
             fetchChats();
         } catch (err: any) {
@@ -240,7 +251,17 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
                             <div key={chat.id} style={{ ...styles.chatItem, backgroundColor: selectedChatId === chat.id ? '#2a3942' : 'transparent' }} onClick={() => onSelectChat(chat)}>
                                 <img src={chat.avatar_url || "https://ui-avatars.com/api/?name=" + (chat.name || 'C')} style={styles.chatAvatar} alt="" />
                                 <div style={styles.chatInfo}>
-                                    <div style={styles.chatHeader}><span style={styles.name}>{chat.name || 'Global Lobby'}</span></div>
+                                    <div style={styles.chatHeader}>
+                                        <span style={styles.name}>{chat.name || 'Global Lobby'}</span>
+                                        {chat.messages?.[0] && (
+                                            <span style={styles.time}>
+                                                {new Date(chat.messages[0].created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div style={styles.lastMsg}>
+                                        {chat.messages?.[0]?.content || "No messages yet"}
+                                    </div>
                                 </div>
                             </div>
                         ))
