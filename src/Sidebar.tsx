@@ -190,10 +190,13 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
     };
 
     const deleteChat = async (e: React.MouseEvent, chatId: string) => {
-        e.stopPropagation(); // Don't select the chat when clicking delete
+        e.stopPropagation();
         if (!window.confirm("Are you sure you want to delete this chat?")) return;
 
         try {
+            // Delete members and messages first to avoid foreign key errors
+            await supabase.from('messages').delete().eq('chat_id', chatId);
+            await supabase.from('chat_members').delete().eq('chat_id', chatId);
             const { error } = await supabase.from('chats').delete().eq('id', chatId);
             if (error) throw error;
             fetchChats();
@@ -206,12 +209,27 @@ export default function Sidebar({ onSelectChat, selectedChatId, user }: SidebarP
     const clearAllChats = async () => {
         if (!window.confirm("WARNING: This will delete ALL your chats except the Global Lobby. Proceed?")) return;
         try {
-            const { error } = await supabase
+            // Get all chat IDs created by this user (except Global Lobby)
+            const { data: userChats } = await supabase
                 .from('chats')
-                .delete()
+                .select('id')
                 .neq('id', '00000000-0000-0000-0000-000000000000')
                 .eq('created_by', user.id);
-            if (error) throw error;
+
+            if (userChats && userChats.length > 0) {
+                const chatIds = userChats.map(c => c.id);
+                // Delete members and messages first
+                for (const cid of chatIds) {
+                    await supabase.from('messages').delete().eq('chat_id', cid);
+                    await supabase.from('chat_members').delete().eq('chat_id', cid);
+                }
+                // Now delete the chats
+                const { error } = await supabase
+                    .from('chats')
+                    .delete()
+                    .in('id', chatIds);
+                if (error) throw error;
+            }
             fetchChats();
         } catch (err: any) {
             console.error("Clear error:", err);
